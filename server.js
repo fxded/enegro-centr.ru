@@ -1,52 +1,53 @@
 // server.js
-const   port        = process.env.PORT || 3007,
-        dbName      = 'meddb',
+const   port        = process.env.PORT || 3008,
         os          = require('os'),
         greeting    = require('./app/greeting'),
         bodyParser  = require('body-parser'),
-        mongoose    = require('mongoose'),
-        session     = require('express-session'),
-        MongoStore  = require('connect-mongo')(session),
         express     = require('express'),
-        db          = require('./config/db'),
-        app         = express();
+        app         = express(),
+        { Pool, Client } = require('pg')
+        conString   = 'postgresql://testdbuser:testdbuser@127.0.0.1/testdb',
+        pool        = new Pool({ connectionString: conString, }),
+        client      = new Client({ connectionString: conString, }),
+        user = {
+            name: 'Vasya',
+            age: 32,
+        };
         
-mongoose.connect(db.url, { useUnifiedTopology: true
-                         , useNewUrlParser: true
-                         , dbName: dbName
-                         , useFindAndModify: false 
-});
-const dbase = mongoose.connection;
-console.log("=====",dbase.client.s.url,'=====\n');        
 app.use(express.static(__dirname + '/public'));
 
-//use sessions for tracking logins
-app.use(session({
-  secret: 'iSDXHQ6CW87R9L930RCIQXCJWF',
-  cookie: {maxAge: 9000000},
-  resave: true,
-  saveUninitialized: false,
-  store: new MongoStore({
-    mongooseConnection: dbase
-  })
-}));
-
-dbase.on ('error', console.error.bind(console, 'connection error:'));
-dbase.once('open', () => {
-    require('./app/routes')(app);
+    require('./app/routes')(app, pool);
     app.listen(port, () => {
         let userName = os.userInfo().username;
         console.log(`\n${greeting.date}`);
         console.log(greeting.getMessage(userName) + '! System is started on' , 
                     os.platform(), os.hostname(), os.release() + '. cpu count:',
                     os.cpus().length);
-        console.log('Listen on ' + port + ' dir: ' + __dirname + 
-                    ' dbase: ' +  dbName, '\n');
+        console.log('Listen on ' + port + ' dir: ' + __dirname + '\n');
     });
-});
+    /*pool.query('SELECT NOW()', (err, res) => {
+        console.log(err, res);
+        pool.end();
+    });**/
+    
+    /*client.connect();
+    
+    client.query('SELECT $1::varchar AS my_first_query', ['test db'], (err, res) => {
+        console.log(err, res.rows[0]);
+        client.end();
+    });*/
+    /*client.query('INSERT INTO users (name, age) VALUES ($1, $2);', [user.name, user.age], (err, res) => {
+        console.log(err, res);
+        client.end();
+    });
+    client.query('SELECT name, age FROM users;', (err, res) => {
+        console.log(err, res.rows);
+        client.end();
+    });*/
+
+    
 
 process.on("SIGINT", () => {
-    console.log('\ndb is closed'); 
-    mongoose.disconnect();
+    console.log('\nbye bye'); 
     process.exit();
 });

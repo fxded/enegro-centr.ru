@@ -1,5 +1,5 @@
 // routes/index.js
-const medRoutes = require('./med_routes');
-module.exports = function (app) {
-    medRoutes(app);
+const routes = require('./def_routes');
+module.exports = function (app, pool) {
+    routes(app, pool);
 };

@@ -1,8 +1,8 @@
-// routes/med_routes.js
-const User = require('../models/user');
-const Doctor = require('../models/doctor');
+// routes/def_routes.js
+//const User = require('../models/user');
+//const Doctor = require('../models/doctor');
 
-module.exports = function(app) {
+module.exports = function(app, pool) {
 
     // GET route for reading data
     app.get('/', function(req,res){
@@ -12,7 +12,7 @@ module.exports = function(app) {
 
     //POST route for updating data
     app.post('/signin', (req, res) => {
-        req.on('data', function(data){
+        req.on('data', (data) => {
             console.log('requset: ', data.toString());
             const   userData = JSON.parse(data),
                     item = {    username    : userData.name, 
@@ -20,41 +20,38 @@ module.exports = function(app) {
                                 email       : userData.email,
                                 speciality  : userData.speciality};
             
-            if (!item.speciality) {
-                User.create(item, function (error, user) {
-                    if (error) {
-                        console.log('bd_error: ', error);
-                        res.send(error);
-                        res.end();
-                    } else {
-                        req.session.userId = user._id;
-                        console.log('result of insert: ', user);
-                        res.send(user);
-                        res.end();
-    //                    return res.redirect('/profile');
-                    }
-                });
-            } else {
-                Doctor.create(item, function (error, user) {
-                    if (error) {
-                        console.log('bd_error: ', error);
-                        res.send(error);
-                        res.end();
-                    } else {
-                        req.session.userId = user._id;
-                        console.log('result of insert: ', user);
-                        res.send(user);
-                        res.end();
-    //                    return res.redirect('/profile');
-                    }
-                });
-            }
+            console.log('item', item);
+            pool.query('INSERT INTO users (name, age, email, passwd) VALUES ($1, $2, $3, $4);'
+                        , [
+                            userData.name,
+                            32,
+                            userData.email,
+                            userData.pass
+                          ]
+                        , (err, res) => {
+                console.log(err, res);
+                pool.end();
+            });
+
+ /*           User.create(item, function (error, user) {
+                if (error) {
+                    console.log('bd_error: ', error);
+                    res.send(error);
+                    res.end();
+                } else {
+                    req.session.userId = user._id;
+                    console.log('result of insert: ', user);
+                    res.send(user);
+                    res.end();
+//                    return res.redirect('/profile');
+                }
+            });*/
         });
         req.on('end', function(){
             console.log('end of requset');
         });
     });
-
+/*
     //POST route for login
     app.post ('/login', function(req,res){
         req.on('data', function(data){
@@ -290,5 +287,5 @@ module.exports = function(app) {
          //console.log('setParameter', req);
     });
 
-    
+    */
 }
