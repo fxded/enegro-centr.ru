@@ -4,7 +4,7 @@ function ajax(url, method, functionName, dataArray) {
     xhttp.open(method, url, true);
     xhttp.setRequestHeader("Content-type", "application/json");
     xhttp.send(dataArray);
-    console.log(url, dataArray);
+    console.log('ajax:', url, dataArray);
     xhttp.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
             functionName(this);

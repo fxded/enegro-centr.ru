@@ -1,7 +1,17 @@
  
  
-ajax('/profilePatient', 'GET', getUserData, null);
+ajax('/profileUser', 'GET', getUserData, null);
 
+function getUserData(result) {
+    result = JSON.parse(result.response);
+    console.log('by getUserData: ',result);
+    if (result.data == 400) {
+        document.location.href = "login.html";
+    } else {
+        document.querySelector('title').innerHTML = result.user;
+    }
+}
+/*
 function getUserData(result) {
     let table = document.querySelector('#tbody'),
         row, cell, span, appo;
@@ -66,3 +76,4 @@ function getAnswer(result) {
     console.log('by getAnswer: ',result);
     
 }
+*/

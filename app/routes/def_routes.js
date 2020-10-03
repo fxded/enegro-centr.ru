@@ -49,18 +49,30 @@ module.exports = function(app, pool) {
     //POST route for login
     app.post ('/login', function(req,res){
         req.on('data', function(data){
-            console.log('login requset: ', data.toString());
             const   userData = JSON.parse(data);
+            console.log('login requset: ', userData);
 
             ;(async () => {
             const client = await pool.connect()
             try {
-                const res = await client.query('SELECT * FROM users;');
-                console.log('the res is:', res.rows);
-            } finally {
+                const answer = await client.query(
+                    'SELECT email , passwd FROM users WHERE email = $1 AND passwd = $2;',
+                    [
+                        userData.email,
+                        userData.password
+                    ]
+                );
+                console.log('the res is:', answer.rows[0]);
                 // Make sure to release the client before any error handling,
                 // just in case the error handling itself throws an error.
-                res.send(userData);
+                if (answer.rows[0]) {
+                    req.session.userId = answer.rows[0]['email'];
+                    res.send({data: 'finding is ok'
+                            , file: 'userProfile.html'});
+                } else {
+                    res.send({error:answer, msg:"Something went wrong!"});
+                }
+           } finally {
                 res.end();
                 client.release();
             }
@@ -71,10 +83,38 @@ module.exports = function(app, pool) {
             console.log('end of requset');
         });
     });
-/*
+
     // GET route after registering
-    app.get('/profilePatient', function (req, res, next) {
-        User.findById(req.session.userId).exec(function (error, user) {
+    app.get('/profileUser', function (req, res, next) {
+        console.log('profile requset: ', req.session);
+        if (req.session.userId) {
+            res.send({data: 'finding is ok'
+                    , user: req.session.userId});
+            res.end();
+        } else {
+            var err = new Error('Not authorized! Go back!');
+            err.status = 400;
+            console.log('------->session is ended:', err.status);
+            res.send({data: err.status});
+        }
+    });
+
+    // GET for logout logout
+    app.get('/logout', function (req, res, next) {
+        if (req.session) {
+            // delete session object
+            req.session.destroy(function (err) {
+                if (err) {
+                    console.log('------->error of destroing session:', err);
+                } else {
+                    console.log('------->session destroyed:');
+                    res.redirect('/');
+                }
+            });
+        }
+    });
+
+/*        User.findById(req.session.userId).exec(function (error, user) {
             if (error) {
                     console.log('------->session is error:', error);
             } else {
@@ -124,22 +164,8 @@ module.exports = function(app, pool) {
             }
         });
     });
-
-    // GET for logout logout
-    app.get('/logout', function (req, res, next) {
-        if (req.session) {
-            // delete session object
-            req.session.destroy(function (err) {
-            if (err) {
-                console.log('------->error of destroing session:', err);
-            } else {
-                console.log('------->session destroyed:');
-                res.redirect('/');
-            }
-            });
-        }
-    });
-    
+*/
+/*    
     // POST to set reception time by doctors
     app.post('/setParameter', function (req, res) {
         req.on('data', function(data){

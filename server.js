@@ -4,6 +4,7 @@ const   port        = process.env.PORT || 3008,
         greeting    = require('./app/greeting'),
         bodyParser  = require('body-parser'),
         express     = require('express'),
+        session     = require('express-session'),
         app         = express(),
         { Pool, Client } = require('pg')
         conString   = 'postgresql://testdbuser:testdbuser@127.0.0.1/testdb',
@@ -15,6 +16,13 @@ const   port        = process.env.PORT || 3008,
         };
         
 app.use(express.static(__dirname + '/public'));
+
+app.use(session({
+    secret: 'aaa2C44-4D44-WppQ38Siuyiuy',
+    cookie: {maxAge: 90000},
+    resave: true,
+    saveUninitialized: true
+}));
 
     require('./app/routes')(app, pool);
     

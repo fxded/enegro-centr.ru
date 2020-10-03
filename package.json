@@ -4,7 +4,7 @@
   "description": "application for test and learning postgresql",
   "main": "server.js",
   "scripts": {
-    "test": "node server.js",
+    "devStart": "nodemon server.js",
     "start": "node server.js"
   },
   "repository": {
@@ -15,10 +15,15 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.1",
+    "express-session": "^1.17.1",
     "pg": "^8.3.3"
   },
   "bugs": {
     "url": "https://github.com/fxded/energo-centr.ru/issues"
   },
-  "homepage": "https://github.com/fxded/energo-centr.ru#readme"
+  "homepage": "https://github.com/fxded/energo-centr.ru#readme",
+  "devDependencies": {
+    "dotenv": "^8.2.0",
+    "nodemon": "^2.0.4"
+  }
 }
