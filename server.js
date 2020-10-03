@@ -17,6 +17,14 @@ const   port        = process.env.PORT || 3008,
 app.use(express.static(__dirname + '/public'));
 
     require('./app/routes')(app, pool);
+    
+    // the pool will emit an error on behalf of any idle clients
+    // it contains if a backend error or network partition happens
+    pool.on('error', (err, client) => {
+        console.error('Unexpected error on idle client', err)
+        process.exit(-1);
+    });
+    
     app.listen(port, () => {
         let userName = os.userInfo().username;
         console.log(`\n${greeting.date}`);
@@ -49,5 +57,6 @@ app.use(express.static(__dirname + '/public'));
 
 process.on("SIGINT", () => {
     console.log('\nbye bye'); 
+    pool.end();
     process.exit();
 });

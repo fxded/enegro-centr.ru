@@ -13,89 +13,65 @@ module.exports = function(app, pool) {
     //POST route for updating data
     app.post('/signin', (req, res) => {
         req.on('data', (data) => {
-            console.log('requset: ', data.toString());
+            console.log('signin requset: ', data.toString());
             const   userData = JSON.parse(data),
-                    item = {    username    : userData.name, 
-                                password    : userData.pass,
-                                email       : userData.email,
-                                speciality  : userData.speciality};
+                    item = {    password    : userData.pass,
+                                email       : userData.email  };
             
-            console.log('item', item);
-            pool.query('INSERT INTO users (name, age, email, passwd) VALUES ($1, $2, $3, $4);'
-                        , [
-                            userData.name,
-                            32,
-                            userData.email,
-                            userData.pass
-                          ]
-                        , (err, res) => {
-                console.log(err, res);
-                pool.end();
-            });
+            //console.log('item', item);
+            
+            ;(async () => {
+            const client = await pool.connect()
+            try {
+                const res = await client.query(
+                    'INSERT INTO users (email, passwd) VALUES ($1, $2);',
+                    [
+                        userData.email,
+                        userData.pass
+                    ]
+                );
+                //console.log('the res is:', res);
+            } finally {
+                // Make sure to release the client before any error handling,
+                // just in case the error handling itself throws an error.
+                res.send(item);
+                res.end();
+                client.release();
+            }
+            })().catch(err => console.log(err.stack));
+            
+        });
+        req.on('end', function(){
+            console.log('end of requset');
+        });
+    });
 
- /*           User.create(item, function (error, user) {
-                if (error) {
-                    console.log('bd_error: ', error);
-                    res.send(error);
-                    res.end();
-                } else {
-                    req.session.userId = user._id;
-                    console.log('result of insert: ', user);
-                    res.send(user);
-                    res.end();
-//                    return res.redirect('/profile');
-                }
-            });*/
+    //POST route for login
+    app.post ('/login', function(req,res){
+        req.on('data', function(data){
+            console.log('login requset: ', data.toString());
+            const   userData = JSON.parse(data);
+
+            ;(async () => {
+            const client = await pool.connect()
+            try {
+                const res = await client.query('SELECT * FROM users;');
+                console.log('the res is:', res.rows);
+            } finally {
+                // Make sure to release the client before any error handling,
+                // just in case the error handling itself throws an error.
+                res.send(userData);
+                res.end();
+                client.release();
+            }
+            })().catch(err => console.log(err.stack));
+                   
         });
         req.on('end', function(){
             console.log('end of requset');
         });
     });
 /*
-    //POST route for login
-    app.post ('/login', function(req,res){
-        req.on('data', function(data){
-            console.log('requset: ', data.toString());
-            const   userData = JSON.parse(data);
-                   
-            User.authenticate(userData.email, userData.password, function (error, user) {
-                if ((error) && !(error.status == 401)) {
-                    var err = new Error('Something went wrong at userDB!');
-                    err.status = 401;
-                    console.log('------->error by userDB', error);
-                } else if (error && error.status == 401) {
-                    Doctor.authenticate(userData.email, userData.password, function (error, user) {
-                        if ((error) && !(error.status == 401)) {
-                            var err = new Error('Something went wrong at doctorDB!');
-                            err.status = 401;
-                            res.send({error:err, msg:"Something went wrong!"});
-                            res.end();
-                            console.log('------->error by doctorDB', error);
-                        } else if (error && error.status == 401) {
-                            var err = new Error('Wrong email or password.');
-                            err.status = 401;
-                            res.send({error:err, msg:"Wrong email or password."});
-                            res.end();
-                            console.log('------->error authenticate:', error);                         
-                        } else {
-                            console.log('------->finding doctors:', user);
-                            req.session.userId = user._id;
-                            res.send({data: 'finding is ok'
-                                    , file: 'doctorProfile.html'});
-                        }
-                    });
-                } else {
-                    console.log('------->finding user11:', user);
-                    req.session.userId = user._id;
-                    res.send({data: 'finding is ok'
-                            , file: 'patientProfile.html'});                }
-            });
-        });
-        req.on('end', function(){
-            console.log('end of requset');
-        });
-    });
-
     // GET route after registering
     app.get('/profilePatient', function (req, res, next) {
         User.findById(req.session.userId).exec(function (error, user) {
