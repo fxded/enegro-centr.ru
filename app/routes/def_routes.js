@@ -1,7 +1,10 @@
 // routes/def_routes.js
 //const User = require('../models/user');
 //const Doctor = require('../models/doctor');
-
+const   Busboy = require('busboy'),
+        inspect = require('util').inspect;
+        
+        
 module.exports = function(app, pool) {
 
     // GET route for reading data
@@ -114,6 +117,40 @@ module.exports = function(app, pool) {
         }
     });
 
+    //PUT the file
+    app.put('/fileUpload', (req, res) => {
+        var busboy = new Busboy({ headers: req.headers });
+        busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
+            console.log('File [' + fieldname + ']: filename: ' + filename);
+            file.on('data', function(data) {
+                console.log('File [' + fieldname + '] got ' + data.length + ' bytes');
+                console.log(data)
+            });
+            file.on('end', function() {
+                console.log('File [' + fieldname + '] Finished');
+            });
+        });
+        busboy.on('field', function(fieldname, val, fieldnameTruncated, valTruncated) {
+            console.log('Field [' + fieldname + ']: value: ' + inspect(val));
+        });
+        busboy.on('finish', function() {
+            console.log('Done parsing form!');
+            res.writeHead(303, { Connection: 'close', Location: '/' });
+            res.end();
+        });
+        req.pipe(busboy);        
+        //console.log("request fileUpload", req.body.user, req.files);
+        /*req.on('data', (data) => {
+            const   userData = JSON.stringify(data);
+            console.log('upload requset: ', userData);
+        });
+        req.on('end', function(){
+            console.log('end of requset');
+        });*/
+    });
+    
+    
+    
 /*        User.findById(req.session.userId).exec(function (error, user) {
             if (error) {
                     console.log('------->session is error:', error);

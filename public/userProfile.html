@@ -17,6 +17,7 @@
         <!-- Custom Theme files -->
         <link href="css/style.css" rel="stylesheet" type="text/css" media="all" />
         <link href="css/table.css" rel="stylesheet" type="text/css" media="all" />
+        <link href="css/userProf.css" rel="stylesheet" type="text/css" media="all" />
     </head>
     <body>
         <!-- nav -->
@@ -26,7 +27,24 @@
             </ul>
         </div>
         <!--h1 id='h1Name'>Profile of </h1-->
-        <div id='temp'></div>
+        <!--div id='upload' class="active1">
+            <h2>Here you can upload file</h2>
+            <input id="uploadCV" type="file" name="file"/>
+            <span class="tp">
+                <input id="uploadBtn" type="submit" value="Upload">
+            </span>
+        </div-->
+        <div class="dada">
+            <label for="myfile" class="chous">
+                Here you can choice a file for upload (less than 5 mb)
+            </label>
+            <input type="file" class="my" id="myfile" name="myfile" onchange="fileInputChange(this)"/>
+        </div>
+        <div class="dada">
+            <span id="upload" class="chous">
+                Upload the selected file
+            </span>
+        </div>
         <div id='promise'>
             <h2>Your available files</h2>
             <table class="tables">

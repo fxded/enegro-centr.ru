@@ -16,10 +16,11 @@ const   port        = process.env.PORT || 3008,
         };
         
 app.use(express.static(__dirname + '/public'));
+//app.use(bodyParser);
 
 app.use(session({
     secret: 'aaa2C44-4D44-WppQ38Siuyiuy',
-    cookie: {maxAge: 90000},
+    cookie: {maxAge: 9000000},
     resave: true,
     saveUninitialized: true
 }));

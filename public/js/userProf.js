@@ -1,4 +1,4 @@
- 
+
  
 ajax('/profileUser', 'GET', getUserData, null);
 
@@ -11,6 +11,65 @@ function getUserData(result) {
         document.querySelector('title').innerHTML = result.user;
     }
 }
+
+function fileInputChange(input) {
+    var text = (input.files.length > 0 && input.files[0].size < 1024 * 1024 * 5) 
+        ? input.files[0].name 
+        : 'Here you can choice a file for upload (less than 5 mb)';
+    input.parentNode.getElementsByTagName('label')[0].innerText = text;
+    console.log(input.files, input.files[0].size );
+}
+
+document.querySelector('#upload').onclick = async () => {
+    const myInput = document.querySelector('#myfile');
+    if (myInput.files[0]) {
+        console.log('myInput', 
+                    myInput.files[0].name,
+                    document.querySelector('title').innerHTML
+                   );
+        const formData = new FormData();
+        formData.append('user', document.querySelector('title').innerHTML);
+        formData.append('file', myInput.files[0]);
+        try {
+            const response = await fetch('/fileUpload', {
+                method: 'PUT',
+                body: formData,
+            });
+            //const result = await response.json();
+            const result = await response;
+            console.log('Успех:', result);
+            //console.log('Успех:', JSON.stringify(result));
+        } catch (error) {
+            console.error('Ошибка:', error);
+        }
+    }
+}
+
+/*https://developer.mozilla.org/ru/docs/Web/API/Fetch_API/Using_Fetch
+ const formData = new FormData();
+const photos = document.querySelector('input[type="file"][multiple]');
+
+formData.append('title', 'Мой отпуск в Вегасе');
+for (let i = 0; i < photos.files.length; i++) {
+  formData.append('photos', photos.files[i]);
+}
+
+try {
+  const response = await fetch('https://example.com/posts', {
+    method: 'POST',
+    body: formData
+  });
+  const result = await response.json();
+  console.log('Успех:', JSON.stringify(result));
+} catch (error) {
+  console.error('Ошибка:', error);
+}
+ 
+ */
+
+// Later, perhaps in a form 'submit' handler or the input's 'change' handler:
+/**/
+
 /*
 function getUserData(result) {
     let table = document.querySelector('#tbody'),
