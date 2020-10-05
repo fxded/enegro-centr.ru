@@ -23,31 +23,34 @@
         <!-- nav -->
         <div class="topnav">
             <ul class="ul_header_right">
-                <li class="wrap-li"><a class="active" href="/logout">Logout</a></li>
+                <li class="wrap-li"><a class="active" href="/logout">Выход</a></li>
             </ul>
         </div>
         <div class="dada">
             <label for="myfile" class="chous">
-                Here you can choice a file for upload (less than 5 mb)
+                <!--Here you can choice a file for upload (less than 5 mb)-->
+                Выбирите файл для загрузки (не более 5 Mb)
             </label>
             <input type="file" class="my" id="myfile" name="myfile" onchange="fileInputChange(this)"/>
         </div>
         <div class="dada">
             <span id="upload" class="chous">
-                Upload the selected file
+                <!--Upload the selected file-->
+                Загрузить выбранный файл
             </span>
         </div>
         <div class="dada">
             <span id="getList" class="chous">
-                Get a list of your files
+                <!--Get a list of your files-->
+                Список загруженных файлов
             </span>
         </div>
         <div id='promise'>
-            <h2>Your available files</h2>
+            <!--h2>Your available files</h2-->
             <table class="tables">
                 <thead>
                     <tr>
-                        <td>Name</td>
+                        <td>Имя файла</td>
                     </tr>
                 </thead>
                 <tbody id="tbody">
