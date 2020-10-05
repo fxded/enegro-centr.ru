@@ -8,8 +8,8 @@ const   port        = process.env.PORT || 3008,
         app         = express(),
         fileUpload = require('express-fileupload'),
         { Pool, Client } = require('pg')
-        //conString   = 'postgresql://testdbuser:testdbuser@127.0.0.1/testdb',
-        conString   = 'postgres://ddrowhaztfavli:f1673a5f37e784604456ffd54507cc86fd7051183ccfc584586d3103670fcd2a@ec2-52-17-53-249.eu-west-1.compute.amazonaws.com:5432/dafkp8tf9dubg3',
+        conString   = 'postgresql://testdbuser:testdbuser@127.0.0.1/testdb',
+        //conString   = 'postgres://ddrowhaztfavli:f1673a5f37e784604456ffd54507cc86fd7051183ccfc584586d3103670fcd2a@ec2-52-17-53-249.eu-west-1.compute.amazonaws.com:5432/dafkp8tf9dubg3',
         pool        = new Pool({ connectionString: conString, }),
         client      = new Client({ connectionString: conString, }),
         user = {
@@ -29,8 +29,6 @@ app.use(session({
 
     require('./app/routes')(app, pool);
     
-    // the pool will emit an error on behalf of any idle clients
-    // it contains if a backend error or network partition happens
     pool.on('error', (err, client) => {
         console.error('Unexpected error on idle client', err)
         process.exit(-1);
@@ -44,27 +42,6 @@ app.use(session({
                     os.cpus().length);
         console.log('Listen on ' + port + ' dir: ' + __dirname + '\n');
     });
-    /*pool.query('SELECT NOW()', (err, res) => {
-        console.log(err, res);
-        pool.end();
-    });**/
-    
-    /*client.connect();
-    
-    client.query('SELECT $1::varchar AS my_first_query', ['test db'], (err, res) => {
-        console.log(err, res.rows[0]);
-        client.end();
-    });*/
-    /*client.query('INSERT INTO users (name, age) VALUES ($1, $2);', [user.name, user.age], (err, res) => {
-        console.log(err, res);
-        client.end();
-    });
-    client.query('SELECT name, age FROM users;', (err, res) => {
-        console.log(err, res.rows);
-        client.end();
-    });*/
-
-    
 
 process.on("SIGINT", () => {
     console.log('\nbye bye'); 
