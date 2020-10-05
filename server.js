@@ -6,6 +6,7 @@ const   port        = process.env.PORT || 3008,
         express     = require('express'),
         session     = require('express-session'),
         app         = express(),
+        fileUpload = require('express-fileupload'),
         { Pool, Client } = require('pg')
         conString   = 'postgresql://testdbuser:testdbuser@127.0.0.1/testdb',
         pool        = new Pool({ connectionString: conString, }),
@@ -16,7 +17,7 @@ const   port        = process.env.PORT || 3008,
         };
         
 app.use(express.static(__dirname + '/public'));
-//app.use(bodyParser);
+app.use(fileUpload());
 
 app.use(session({
     secret: 'aaa2C44-4D44-WppQ38Siuyiuy',

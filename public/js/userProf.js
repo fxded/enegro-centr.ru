@@ -9,6 +9,7 @@ function getUserData(result) {
         document.location.href = "login.html";
     } else {
         document.querySelector('title').innerHTML = result.user;
+        document.querySelector('title').userId = result.id;
     }
 }
 
@@ -29,6 +30,7 @@ document.querySelector('#upload').onclick = async () => {
                    );
         const formData = new FormData();
         formData.append('user', document.querySelector('title').innerHTML);
+        formData.append('userID', document.querySelector('title').userId);
         formData.append('file', myInput.files[0]);
         try {
             const response = await fetch('/fileUpload', {
@@ -45,6 +47,25 @@ document.querySelector('#upload').onclick = async () => {
     }
 }
 
+document.querySelector('#getList').onclick = async () => {
+    let table = document.querySelector('#tbody'), row;
+        try {
+            const response = await fetch('/getList', {
+                method: 'GET',
+            });
+            const result = await response.json();
+            //const result = await response;
+            console.log('Успех:', result);
+            table.innerHTML = '';
+            result.queryData.forEach(item => {
+                row = table.insertRow();
+                row.insertCell().innerHTML = item.path_file;
+            })
+            //console.log('Успех:', JSON.stringify(result));
+        } catch (error) {
+            console.error('Ошибка:', error);
+        }
+}
 /*https://developer.mozilla.org/ru/docs/Web/API/Fetch_API/Using_Fetch
  const formData = new FormData();
 const photos = document.querySelector('input[type="file"][multiple]');
